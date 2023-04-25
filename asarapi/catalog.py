@@ -11,7 +11,8 @@ from appdirs import user_data_dir
 from tqdm import tqdm
 
 CATALOG_URL = 'http://data.yannforget.me/asarapi/catalog.db'
-DATA_DIR = user_data_dir('asarapi')
+# DATA_DIR = user_data_dir('asarapi')
+DATA_DIR = os.path.expanduser('~/.local/share/asarapi')
 
 
 def check_catalog():
@@ -137,6 +138,6 @@ def query(area, start, stop, platform=None, product='precision', orbit=None,
     conn.close()
 
     if len(products) > limit:
-        return products.iloc[:500]
+        return products.iloc[:limit]
     else:
         return products
