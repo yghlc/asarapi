@@ -50,7 +50,8 @@ def save_query_results(results, save_path):
     # print(results)
 
     # save to to file
-    results.to_json(save_path,orient='records',date_format='iso', indent=2)
+    out_res = results.reset_index()
+    out_res.to_json(save_path,orient='records',date_format='iso', indent=2)
     print(datetime.now(), 'Saved query results to ', save_path)
 
 def download_one_file_ESA(web_driver, url, save_dir):
