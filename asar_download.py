@@ -148,6 +148,31 @@ def download_ASAR_from_ESA(web_driver, extent_shp, save_dir, start, stop, platfo
         automated_download_ASAR_ESA(web_driver, data_urls, save_dir, max_process_num=process_num)
 
 
+def test_search():
+    extent_shp = os.path.expanduser('~/Data/Arctic/pan_Arctic/extent/SAR_coh_test_region/ALDs_Dawson_Yukon_Lipovsky_2004.shp')
+    ROIs_wkt = shapefile_to_ROIs_wkt(extent_shp)
+    aoi_wkt = ROIs_wkt[0]
+    save_dir = 'esa_data'
+    start = datetime(2004,3,1)
+    stop = datetime(2004,11,1)
+    platform = 'ERS'
+    ext_base_name = io_function.get_name_no_ext(extent_shp)
+
+    print(datetime.now(), 'Searching... ... ...')
+    print(datetime.now(), 'Input search parameters:')
+    print('roi_wkt:', aoi_wkt)
+    print('save_dir, start_date, end_date:', save_dir, start, stop)
+    # print('platform, product, flightDirection:', platform, product, orbit)
+
+    results = query(aoi_wkt, start, stop, platform=platform, contains=False, limit=500)
+
+    print(datetime.now(), 'Found %s results' % (len(results)))
+    data_meta_path = os.path.join(save_dir, '%s_meta.json' % ext_base_name)
+
+    save_query_results(results, data_meta_path)
+
+
+
 def ESA_log_in(save_dir,username,password):
     # log in
     # Step 1: Start a new instance of the Chrome browser using Selenium
@@ -233,6 +258,8 @@ def main(options, args):
 
 
 if __name__ == "__main__":
+    # test_search()
+    # sys.exit(0)
 
     usage = "usage: %prog [options] extent_shp or file_ids.txt"
     parser = OptionParser(usage=usage, version="1.0 2023-05-10")
