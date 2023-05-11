@@ -60,6 +60,7 @@ def download_one_file_ESA(web_driver, url, save_dir):
     save_path = os.path.join(save_dir,file_name)
     if os.path.isfile(save_path):
         print('%s exists, skip downloading'%save_path)
+        return
 
     # check free disk space
     free_GB = io_function.get_free_disk_space_GB(save_dir)
