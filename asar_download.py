@@ -159,7 +159,7 @@ def ESA_log_in(save_dir,username,password):
     # Step 2: Load the login page
     driver.get(admin_url)
     # Step 3: Wait for the page to load (use a timeout value that makes sense for your website)
-    driver.implicitly_wait(15)
+    driver.implicitly_wait(30)
 
     # Step 4: Enter the username and password
     username_field = driver.find_element(By.NAME, 'usernameUserInput')
@@ -171,7 +171,7 @@ def ESA_log_in(save_dir,username,password):
     password_field.send_keys(Keys.RETURN)
 
     # Step 6: Wait for the page to load after submitting the form (use a timeout value that makes sense for your website)
-    driver.implicitly_wait(10)
+    driver.implicitly_wait(30)
 
     if 'Signed in as %s' % username in driver.page_source:
         print('Login successful!')
@@ -205,7 +205,7 @@ def main(options, args):
         print('Get user name and password from the .netrc file')
         user_name, password = get_user_password_netrc()
 
-    print(datetime.now(), 'download data from ESA, start_date: %s, end_date: %s, user: %s, \nwill save to %s'%(start_date,end_date,user_name,save_dir))
+    print(datetime.now(), 'download data from ESA, start_date: %s, end_date: %s, user: %s \nwill save to %s'%(start_date,end_date,user_name,save_dir))
 
     web_driver = ESA_log_in(save_dir,user_name,password)
 
