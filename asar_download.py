@@ -11,10 +11,12 @@ add time: 10 May, 2023
 import os,sys
 from optparse import OptionParser
 from datetime import datetime
+from datetime import timedelta
 from netrc import netrc
 import dateutil.parser
 from urllib.parse import urlparse
 import time
+import re
 from multiprocessing import Process
 
 deeplabforRS =  os.path.expanduser('~/codes/PycharmProjects/DeeplabforRS')
@@ -67,19 +69,29 @@ def does_ERS_file_exist(file_name, dir_name):
     if os.path.isfile(save_path):
         return True
 
+    datetime_format = '%Y%m%d_%H%M%S'
+
     # try to search similar file names
     diff = [i for i in range(-5,6)]
     # diff.remove(0)
     strs = file_name.split('_')
-    change_term = int(strs[3]) # 203036
-    strs[4] = '*'
+    # change_term = int(strs[3]) # 203036
+    change_term_str = strs[2][6:]+'_'+strs[3]       # 20041031_203035
+    change_term = datetime.strptime(change_term_str, datetime_format)
+    strs[4] = '*'       # 00000015A099 change to something, not sure what it look like.
     for ii in diff:
-        tmp = str(change_term + ii)
-        strs[3] = tmp
+        # add or substract a few second
+        # tmp = str(change_term + ii)
+        tmp = change_term + timedelta(seconds=ii)
+        tmp_str = tmp.strftime(datetime_format)
+        tmp_str_list = tmp_str.split('_')
+        strs[2] = strs[2].replace(strs[2][6:], tmp_str_list[0]) # replace 20041031 to a new date if happen
+        strs[3] = tmp_str_list[1]                               # change 203035 to a new time after adding a new seconds
+
         new_name = '_'.join(strs)
         file_list = io_function.get_file_list_by_pattern(dir_name,new_name)
-        # new_path = os.path.join(dir_name,new_name)
-        # print(new_path)
+
+        # print(new_name)
         # if os.path.isfile(new_path):
         #     basic.outputlogMessage('Warning, %s does not exists, but a file with similar name exists: %s'%(file_name,new_name))
         #     return True
