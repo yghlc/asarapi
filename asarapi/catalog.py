@@ -48,7 +48,7 @@ def _check_param(value, possible):
 
 def _build_query(relation, area, start, end, platform,
                  product, orbit, polarisation, limit):
-    sql = ('SELECT id, date, platform, orbit, polarisation, swath, url, '
+    sql = ('SELECT id, date, platform, path, frame, orbit, polarisation, swath, url, '
            'AsText(geom) AS footprint '
            'FROM products '
            'WHERE {relation}(geom, GeomFromText("{area}", 4326)) '
@@ -138,6 +138,7 @@ def query(area, start, stop, platform=None, product='precision', orbit=None,
     conn.close()
 
     if len(products) > limit:
+        print('Warning, only the first %d records from %d ones'%(limit,len(products)))
         return products.iloc[:limit]
     else:
         return products
