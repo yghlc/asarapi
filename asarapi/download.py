@@ -16,9 +16,18 @@ from tqdm import tqdm
 from asarapi.catalog import _connect_db
 
 
-BASE_URL = 'https://eo-sso-idp.eo.esa.int'
-ADMIN_URL = 'https://eo-sso-idp.eo.esa.int/idp/umsso20/admin'
-LOGOUT_URL = 'https://eo-sso-idp.eo.esa.int/idp/profile/Logout?execution=e3s1'
+# BASE_URL = 'https://eo-sso-idp.eo.esa.int'
+# ADMIN_URL = 'https://eo-sso-idp.eo.esa.int/idp/umsso20/admin'
+# LOGOUT_URL = 'https://eo-sso-idp.eo.esa.int/idp/profile/Logout?execution=e3s1'
+
+BASE_URL = 'https://esar-ds.eo.esa.int'
+# ADMIN_URL = 'https://esar-ds.eo.esa.int/idp/umsso20/admin'
+# ADMIN_URL = 'https://eoiam-idp.eo.esa.int/authenticationendpoint/login.do'
+ADMIN_URL = 'https://esar-ds.eo.esa.int/oads/access/login'
+# LOGOUT_URL = 'https://esar-ds.eo.esa.int/idp/profile/Logout?execution=e3s1'
+LOGOUT_URL = 'https://esar-ds.eo.esa.int/oads/Shibboleth.sso/Logout'
+
+# https://esar-ds.eo.esa.int/oads/Shibboleth.sso/Logout
 
 
 def log_in(username, password):
@@ -33,15 +42,25 @@ def log_in(username, password):
     for link in soup.find_all('a'):
         if 'Login' in link.getText():
             url = link.attrs['href']
+    print('debuging: BASE_URL, url', BASE_URL, url)
     login_url = urljoin(BASE_URL, url)
 
+    # payload = {
+    #     'cn': username,
+    #     'password': password,
+    #     'loginFields': 'cn@password',
+    #     'loginMethod': 'umsso',
+    #     'sessionTime': 'oneday',
+    #     'idleTime': 'oneday'
+    # }
+    from uuid import uuid4
+    session_key = uuid4()
     payload = {
-        'cn': username,
+        'tocommonauth': True,
+        'usernameUserInput': username,
+        'username': username,
         'password': password,
-        'loginFields': 'cn@password',
-        'loginMethod': 'umsso',
-        'sessionTime': 'oneday',
-        'idleTime': 'oneday'
+        'sessionDataKey': session_key #1457c2d7-1abe-4d8e-afca-3268c17056a0
     }
 
     # Login

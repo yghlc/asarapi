@@ -138,6 +138,7 @@ def query(area, start, stop, platform=None, product='precision', orbit=None,
     conn.close()
 
     if len(products) > limit:
+        # this doesn't work because "limit" already be set at "_build_query"
         print('Warning, only the first %d records from %d ones'%(limit,len(products)))
         return products.iloc[:limit]
     else:
