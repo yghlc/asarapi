@@ -56,6 +56,13 @@ def save_query_results(results, save_path):
     out_res.to_json(save_path,orient='records',date_format='iso', indent=2)
     print(datetime.now(), 'Saved query results to ', save_path)
 
+def create_soft_link(dir,old_filename, new_filename):
+    current_dir = os.getcwd()
+    os.chdir(dir)
+    cmd_str = 'ln -s %s %s '%(new_filename, old_filename)
+    basic.os_system_exit_code(cmd_str)
+    os.chdir(current_dir)
+
 def does_ERS_file_exist(file_name, dir_name):
     # it's strange that download file name of ERS imagery is different the filename in the URL and ID.
     # for example,
@@ -96,7 +103,8 @@ def does_ERS_file_exist(file_name, dir_name):
         #     basic.outputlogMessage('Warning, %s does not exists, but a file with similar name exists: %s'%(file_name,new_name))
         #     return True
         if len(file_list) == 1:
-            basic.outputlogMessage('Warning, %s does not exists, but a file with similar name exists: %s' % (file_name, file_list[0]))
+            basic.outputlogMessage('Warning, %s does not exist, but a file with similar name exists: %s' % (file_name, file_list[0]))
+            create_soft_link(dir_name,file_name, os.path.basename(file_list[0]))
             return True
 
     return False
