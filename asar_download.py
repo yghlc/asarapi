@@ -161,6 +161,7 @@ def ESA_log_in(save_dir,username,password):
     driver.get(admin_url)
     # Step 3: Wait for the page to load (use a timeout value that makes sense for your website)
     driver.implicitly_wait(30)
+    time.sleep(30)
 
     # Step 4: Enter the username and password
     username_field = driver.find_element(By.NAME, 'usernameUserInput')
@@ -173,6 +174,7 @@ def ESA_log_in(save_dir,username,password):
 
     # Step 6: Wait for the page to load after submitting the form (use a timeout value that makes sense for your website)
     driver.implicitly_wait(30)
+    time.sleep(30)
 
     if 'Signed in as %s' % username in driver.page_source:
         print('Login successful!')
