@@ -164,7 +164,7 @@ def test_search():
     print('save_dir, start_date, end_date:', save_dir, start, stop)
     # print('platform, product, flightDirection:', platform, product, orbit)
 
-    results = query(aoi_wkt, start, stop, platform=platform, contains=False, limit=500)
+    results = query(aoi_wkt, start, stop, platform=platform,product='single-look-complex', contains=False, limit=500)
 
     print(datetime.now(), 'Found %s results' % (len(results)))
     data_meta_path = os.path.join(save_dir, '%s_meta.json' % ext_base_name)
