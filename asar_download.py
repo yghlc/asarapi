@@ -177,6 +177,7 @@ def ESA_log_in(save_dir,username,password):
         print('Login successful!')
         return driver
     else:
+        driver.quit()
         raise ValueError('Login failed!')
 
 def ESA_logout(web_driver):
