@@ -54,12 +54,48 @@ def save_query_results(results, save_path):
     out_res.to_json(save_path,orient='records',date_format='iso', indent=2)
     print(datetime.now(), 'Saved query results to ', save_path)
 
+def does_ERS_file_exist(file_name, dir_name):
+    # it's strange that download file name of ERS imagery is different the filename in the URL and ID.
+    # for example,
+    # in the url, the file name is: SAR_IMS_1PNESA20041031_203036_00000015A099_00386_49839_0000.E2
+    # but after downloaded, the filename is: SAR_IMS_1PNESA20041031_203035_00000018A099_00386_49839_0000.E2
+    # difference: 203036 changed to 203035
+    # 203036 means the acquisition time is 20:30:36
+
+    save_path = os.path.join(dir_name,file_name)
+    if os.path.isfile(save_path):
+        return True
+
+    # try to search similar file names
+    diff = [i for i in range(-5,6)]
+    diff.remove(0)
+    strs = file_name.split('_')
+    change_term = int(strs[3]) # 203036
+    for ii in diff:
+        tmp = str(change_term + ii)
+        strs[3] = tmp
+        new_name = '_'.join(strs)
+        new_path = os.path.join(dir_name,new_name)
+        # print(new_path)
+        if os.path.isfile(new_path):
+            basic.outputlogMessage('Warning, %s does not exists, but a file with similar name exists: %s'%(file_name,new_name))
+            return True
+
+    return False
+
+
+def test_does_ERS_file_exist():
+    file_name = 'SAR_IMS_1PNESA20041031_203036_00000015A099_00386_49839_0000.E2'
+    dir_name = os.path.expanduser('~/Data/asar_ERS_Envisat')
+    print(does_ERS_file_exist(file_name, dir_name))
+
+
 def download_one_file_ESA(web_driver, url, save_dir):
 
     tmp = urlparse(url)
     file_name = os.path.basename(tmp.path)
     save_path = os.path.join(save_dir,file_name)
-    if os.path.isfile(save_path):
+    if does_ERS_file_exist(file_name, save_dir):
         print('%s exists, skip downloading'%save_path)
         return
 
@@ -76,7 +112,7 @@ def download_one_file_ESA(web_driver, url, save_dir):
 
     # wait until the file has been downloaded
     total_wait_time = 0
-    while os.path.isfile(save_path) is False and total_wait_time < 60 * 60 * 12:
+    while does_ERS_file_exist(file_name, save_dir) is False and total_wait_time < 60 * 60 * 12:
         time.sleep(60)
         total_wait_time += 60
     basic.outputlogMessage('downloaded: %s'%save_path)
@@ -259,6 +295,7 @@ def main(options, args):
 
 if __name__ == "__main__":
     # test_search()
+    # test_does_ERS_file_exist()
     # sys.exit(0)
 
     usage = "usage: %prog [options] extent_shp or file_ids.txt"
