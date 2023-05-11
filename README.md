@@ -58,7 +58,7 @@ After downloading the database of catalog and converting to sqlite, then move th
 ```shell
 Usage: asar_download.py [options] extent_shp or file_ids.txt
 
-Introduction: download data from the Alaska Satellite Facility
+Introduction: download data from ESA
 
 Options:
   --version             show program's version number and exit

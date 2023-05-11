@@ -230,8 +230,8 @@ def main(options, args):
 if __name__ == "__main__":
 
     usage = "usage: %prog [options] extent_shp or file_ids.txt"
-    parser = OptionParser(usage=usage, version="1.0 2022-10-31")
-    parser.description = 'Introduction: download data from the Alaska Satellite Facility  '
+    parser = OptionParser(usage=usage, version="1.0 2023-05-10")
+    parser.description = 'Introduction: download data from ESA  '
 
     parser.add_option("-d", "--save_dir",
                       action="store", dest="save_dir",default='esa_data',
