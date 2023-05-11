@@ -59,8 +59,9 @@ def does_ERS_file_exist(file_name, dir_name):
     # for example,
     # in the url, the file name is: SAR_IMS_1PNESA20041031_203036_00000015A099_00386_49839_0000.E2
     # but after downloaded, the filename is: SAR_IMS_1PNESA20041031_203035_00000018A099_00386_49839_0000.E2
-    # difference: 203036 changed to 203035
+    # difference: 203036 changed to 203035,  00000015A099 changed to 00000018A099,
     # 203036 means the acquisition time is 20:30:36
+    # 00000015A099 is Unique identifier for the specific image acquisition
 
     save_path = os.path.join(dir_name,file_name)
     if os.path.isfile(save_path):
@@ -68,17 +69,22 @@ def does_ERS_file_exist(file_name, dir_name):
 
     # try to search similar file names
     diff = [i for i in range(-5,6)]
-    diff.remove(0)
+    # diff.remove(0)
     strs = file_name.split('_')
     change_term = int(strs[3]) # 203036
+    strs[4] = '*'
     for ii in diff:
         tmp = str(change_term + ii)
         strs[3] = tmp
         new_name = '_'.join(strs)
-        new_path = os.path.join(dir_name,new_name)
+        file_list = io_function.get_file_list_by_pattern(dir_name,new_name)
+        # new_path = os.path.join(dir_name,new_name)
         # print(new_path)
-        if os.path.isfile(new_path):
-            basic.outputlogMessage('Warning, %s does not exists, but a file with similar name exists: %s'%(file_name,new_name))
+        # if os.path.isfile(new_path):
+        #     basic.outputlogMessage('Warning, %s does not exists, but a file with similar name exists: %s'%(file_name,new_name))
+        #     return True
+        if len(file_list) == 1:
+            basic.outputlogMessage('Warning, %s does not exists, but a file with similar name exists: %s' % (file_name, file_list[0]))
             return True
 
     return False
