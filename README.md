@@ -20,6 +20,12 @@ The following collections are supported:
 pip install asarapi
 ```
 
+For development:
+```sh
+cd asarapi
+pip install -e .   # these is a dot after e
+```
+
 ## Usage
 
 ### Sync database
@@ -34,9 +40,54 @@ The file will be stored in your user data directory, e.g. `~/.local/share/asarap
 
 Please see [`yannforget/esa-online-catalogue`](https://github.com/yannforget/esa-online-catalogue) for further details regarding the scraping of the ESA Online Catalogue.
 
+*update on April 24, 2023:*
+
+However, the [URL](http://data.yannforget.me/asarapi/catalog.db) of the database is invalid now. 
+So, in [`yannforget/esa-online-catalogue`](https://github.com/yannforget/esa-online-catalogue), 
+need to run 
+```bash
+python retrieve_catalog.py
+python to_sqlite.py
+```
+After downloading the database of catalog and converting to sqlite, then move the "catalog.db" to the user data directory as mentioned above. 
+
 ### Search the catalog
 
 #### Usage
+
+```shell
+Usage: asar_download.py [options] extent_shp or file_ids.txt
+
+Introduction: download data from the Alaska Satellite Facility
+
+Options:
+  --version             show program's version number and exit
+  -h, --help            show this help message and exit
+  -d SAVE_DIR, --save_dir=SAVE_DIR
+                        the folder to save downloaded data
+  -s START_DATE, --start_date=START_DATE
+                        start date for inquiry, with format year-month-day,
+                        e.g., 2018-05-23
+  -e END_DATE, --end_date=END_DATE
+                        the end date for inquiry, with format year-month-day,
+                        e.g., 2018-05-23
+  --platform=DATASET_PLATFORM
+                        The dataset want to download (Satellite)
+  --flightdirection=FLIGHTDIRECTION
+                        The flight direction of SAR imagery, Ascending or
+                        Descending
+  --process_num=PROCESS_NUM
+                        the maximum number of processes for downloading in
+                        parallel
+  -u USERNAME, --username=USERNAME
+                        Earth Data account
+  -p PASSWORD, --password=PASSWORD
+                        password for the earth data account
+
+```
+
+asar_download.py combine the search and downloading, and fix the problem that 
+caused by new esar system. 
 
 ```
 Usage: asarapi search [OPTIONS]
