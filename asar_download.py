@@ -161,7 +161,7 @@ def automated_download_ASAR_ESA(web_driver, data_urls,save_dir, max_process_num=
         sub_process = Process(target=download_one_file_ESA, args=(web_driver,url, save_dir))  # start a process, don't wait
         sub_process.start()
         download_tasks.append(sub_process)
-        time.sleep(1)   # wait 1 seconds
+        time.sleep(0.1)   # wait 1 seconds
 
         basic.close_remove_completed_process(download_tasks)
 
