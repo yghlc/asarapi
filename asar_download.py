@@ -263,14 +263,21 @@ def ESA_log_in(save_dir,username,password):
 
     # Step 6: Wait for the page to load after submitting the form (use a timeout value that makes sense for your website)
     driver.implicitly_wait(30)
-    time.sleep(30)
 
-    if 'Signed in as %s' % username in driver.page_source:
+    # wait until the file has been downloaded
+    total_wait_time = 0
+    max_wait_time = 10 * 6* 10  # # max 10 minutes
+    signed_str = 'Signed in as %s' % username
+    while signed_str in driver.page_source is False and total_wait_time <  max_wait_time:
+        print(datetime.now(), 'waiting the login page')
+        time.sleep(10)
+        total_wait_time += 10
+    if total_wait_time < max_wait_time:
         print('Login successful!')
         return driver
-    else:
-        driver.quit()
-        raise ValueError('Login failed!')
+
+    driver.quit()
+    raise ValueError('Login failed!')
 
 def ESA_logout(web_driver):
     LOGOUT_URL = 'https://esar-ds.eo.esa.int/oads/Shibboleth.sso/Logout'
