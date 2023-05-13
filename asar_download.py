@@ -22,12 +22,14 @@ from multiprocessing import Process
 deeplabforRS =  os.path.expanduser('~/codes/PycharmProjects/DeeplabforRS')
 sys.path.insert(0, deeplabforRS)
 
+import vector_gpd
 from vector_gpd import shapefile_to_ROIs_wkt
+from vector_gpd import wkt_string_to_polygons
 import basic_src.io_function as io_function
 import basic_src.basic as basic
 
 from asarapi.catalog import query
-
+import pandas as pd
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -36,6 +38,8 @@ admin_url = 'https://esar-ds.eo.esa.int/oads/access/login'
 
 machine_name = os.uname()[1]
 download_tasks = []
+
+b_rm_small_overlap = True
 
 def get_user_password_netrc():
     # Set up authentication using .netrc file
@@ -114,6 +118,36 @@ def test_does_ERS_file_exist():
     file_name = 'SAR_IMS_1PNESA20041031_203036_00000015A099_00386_49839_0000.E2'
     dir_name = os.path.expanduser('~/Data/asar_ERS_Envisat')
     print(does_ERS_file_exist(file_name, dir_name))
+
+def remove_record_only_cover_parts(query_results, aoi_wkt):
+    aoi_poly = wkt_string_to_polygons(aoi_wkt)
+    footprints = query_results['footprint'].to_list()
+    if len(footprints) < 1 or b_rm_small_overlap is False:
+        return query_results
+    footprint_polys = [wkt_string_to_polygons(item) for item in footprints]
+
+    sel_idx = []
+    for idx, fp in enumerate(footprint_polys):
+        intersection = aoi_poly.intersection(fp)
+        if intersection.area < fp.area/5 and intersection.area < aoi_poly.area/2:
+            continue
+        else:
+            sel_idx.append(idx)
+        # if intersection.is_empty is True:
+        #     return 0.0
+
+    # # test, saving to shapefile
+    # save_shp_path = 'query_results.gpkg'
+    # save_q_results = query_results.copy()
+    # save_q_results['outline'] = footprint_polys
+    # # 'ESRI Shapefile' dont support datetime format, but GPKG do
+    # vector_gpd.save_polygons_to_files(save_q_results,'outline','EPSG:4326',save_shp_path,format='GPKG')
+    # print('saved %s'%save_shp_path)
+
+    basic.outputlogMessage('Originally found %d SAR images, removed %d records that only cover a small portions of the study area'
+                           %(len(footprint_polys), (len(footprint_polys) - len(sel_idx))))
+
+    return query_results.iloc[sel_idx]
 
 
 def download_one_file_ESA(web_driver, url, save_dir):
@@ -196,6 +230,8 @@ def download_ASAR_from_ESA(web_driver, extent_shp, save_dir, start, stop, platfo
 
         results = query(aoi_wkt,start, stop,platform=platform,product=product, orbit=orbit,polarisation=polarisation,
               contains=contains, limit=limit)
+        # remove some records only cover a small portions (less than half) of the study area
+        results = remove_record_only_cover_parts(results, aoi_wkt)
 
         print(datetime.now(), 'Found %s results' % (len(results)))
         print(datetime.now(), 'Downloading... ... ...')
@@ -228,6 +264,7 @@ def test_search():
     # print('platform, product, flightDirection:', platform, product, orbit)
 
     results = query(aoi_wkt, start, stop, platform=platform,product='single-look-complex', contains=False, limit=500)
+    results = remove_record_only_cover_parts(results, aoi_wkt)
 
     print(datetime.now(), 'Found %s results' % (len(results)))
     data_meta_path = os.path.join(save_dir, '%s_meta.json' % ext_base_name)
@@ -298,7 +335,8 @@ def main(options, args):
     platform = options.dataset_platform
     process_num = options.process_num
     # flightDirection = options.flightdirection.upper()
-
+    global b_rm_small_overlap
+    b_rm_small_overlap = options.b_dont_rm_small_overlap
 
     if user_name is None or password is None:
         print('Get user name and password from the .netrc file')
@@ -362,6 +400,10 @@ if __name__ == "__main__":
     parser.add_option("", "--process_num",
                       action="store", dest="process_num", type=int,default=8,
                       help="the maximum number of processes for downloading in parallel")
+
+    parser.add_option("", "--b_dont_rm_small_overlap",
+                      action="store_false", dest="b_dont_rm_small_overlap",default=True,
+                      help="if set, it will keep the images that only cover a small portion of the study area")
 
 
     parser.add_option("-u", "--username",
