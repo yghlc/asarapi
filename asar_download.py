@@ -382,8 +382,8 @@ def main(options, args):
 
 if __name__ == "__main__":
     # test_search()
-    test_does_ERS_file_exist()
-    sys.exit(0)
+    # test_does_ERS_file_exist()
+    # sys.exit(0)
 
     usage = "usage: %prog [options] extent_shp or file_ids.txt"
     parser = OptionParser(usage=usage, version="1.0 2023-05-10")
