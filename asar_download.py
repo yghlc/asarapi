@@ -115,8 +115,10 @@ def does_ERS_file_exist(file_name, dir_name):
 
 
 def test_does_ERS_file_exist():
-    file_name = 'SAR_IMS_1PNESA20041031_203036_00000015A099_00386_49839_0000.E2'
-    dir_name = os.path.expanduser('~/Data/asar_ERS_Envisat')
+    # file_name = 'SAR_IMS_1PNESA20041031_203036_00000015A099_00386_49839_0000.E2'
+    # dir_name = os.path.expanduser('~/Data/asar_ERS_Envisat')
+    file_name = 'ASA_IMS_1PNESA20050405_181353_000000152036_00113_16199_0000.N1'
+    dir_name = os.path.expanduser('~/Data/asar_ERS_Envisat/Envisat')
     print(does_ERS_file_exist(file_name, dir_name))
 
 def remove_record_only_cover_parts(query_results, aoi_wkt):
@@ -368,8 +370,8 @@ def main(options, args):
 
 if __name__ == "__main__":
     # test_search()
-    # test_does_ERS_file_exist()
-    # sys.exit(0)
+    test_does_ERS_file_exist()
+    sys.exit(0)
 
     usage = "usage: %prog [options] extent_shp or file_ids.txt"
     parser = OptionParser(usage=usage, version="1.0 2023-05-10")
