@@ -102,6 +102,17 @@ def does_ERS_file_exist(file_name, dir_name):
         new_name = '_'.join(strs)
         file_list = io_function.get_file_list_by_pattern(dir_name,new_name)
 
+        # remove files are links or has created links
+        if len(file_list) > 1:
+            f_name_list = [ os.path.basename(item) for item in file_list]
+            rm_idxs = []
+            for idx, (f_name, f_path) in enumerate(zip(f_name_list,file_list)):
+                if os.path.islink(f_path):
+                    target = os.readlink(f_path)
+                    rm_idxs.append(idx)
+                    rm_idxs.append(f_name_list.index(target))
+            file_list = [ file_list[idx] for idx in range(len(file_list)) if idx not in rm_idxs]
+
         # print(new_name)
         # if os.path.isfile(new_path):
         #     basic.outputlogMessage('Warning, %s does not exists, but a file with similar name exists: %s'%(file_name,new_name))
