@@ -168,6 +168,7 @@ def download_one_file_ESA(web_driver, url, save_dir):
         total_wait_time += 60
         free_GB = io_function.get_free_disk_space_GB(save_dir)
 
+    basic.outputlogMessage('start downloading %s'%url)
     web_driver.get(url)
 
     # wait until the file has been downloaded
