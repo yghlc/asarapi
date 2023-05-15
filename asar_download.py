@@ -110,7 +110,8 @@ def does_ERS_file_exist(file_name, dir_name):
                 if os.path.islink(f_path):
                     target = os.readlink(f_path)
                     rm_idxs.append(idx)
-                    rm_idxs.append(f_name_list.index(target))
+                    if target in f_name_list:
+                        rm_idxs.append(f_name_list.index(target))
             file_list = [ file_list[idx] for idx in range(len(file_list)) if idx not in rm_idxs]
 
         # print(new_name)
