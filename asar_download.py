@@ -324,7 +324,7 @@ def ESA_log_in(save_dir,username,password):
         print(datetime.now(), 'waiting for the login page')
         time.sleep(20)
         total_wait_time += 20
-        if signed_str in driver.page_source is False and total_wait_time <  max_wait_time:
+        if signed_str in driver.page_source or total_wait_time >=  max_wait_time:
             break
     if total_wait_time < max_wait_time:
         print('Login successful!')
