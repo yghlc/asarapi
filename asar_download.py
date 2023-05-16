@@ -337,6 +337,7 @@ def ESA_logout(web_driver):
     LOGOUT_URL = 'https://esar-ds.eo.esa.int/oads/Shibboleth.sso/Logout'
     # Navigate to the logout page
     web_driver.get(LOGOUT_URL)
+    print(datetime.now(), 'Log out')
     web_driver.quit()
 
 
