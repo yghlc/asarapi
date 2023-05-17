@@ -193,7 +193,7 @@ def download_one_file_ESA(web_driver, url, save_dir):
         time.sleep(60)
         total_wait_time += 60
     basic.outputlogMessage('downloaded: %s'%save_path)
-    web_driver.close()  # Close the tab or window
+    # web_driver.close()  # Close the tab or window   # got error: Message: no such window: target window already closed
 
 
 def automated_download_ASAR_ESA(web_driver, data_urls,save_dir, max_process_num=8):
