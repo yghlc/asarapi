@@ -38,6 +38,7 @@ admin_url = 'https://esar-ds.eo.esa.int/oads/access/login'
 
 machine_name = os.uname()[1]
 download_tasks = []
+login_window_handle = None
 
 b_rm_small_overlap = True
 
@@ -183,8 +184,8 @@ def download_one_file_ESA(web_driver, url, save_dir):
         free_GB = io_function.get_free_disk_space_GB(save_dir)
 
     basic.outputlogMessage('start downloading %s'%url)
-    # original_window = driver.current_window_handle
     web_driver.switch_to.new_window('tab')
+    current_window_handle = web_driver.current_window_handle
     web_driver.get(url)
 
     # wait until the file has been downloaded
@@ -193,7 +194,13 @@ def download_one_file_ESA(web_driver, url, save_dir):
         time.sleep(60)
         total_wait_time += 60
     basic.outputlogMessage('downloaded: %s'%save_path)
-    # web_driver.close()  # Close the tab or window   # got error: Message: no such window: target window already closed
+    if current_window_handle in current_window_handle.window_handles:
+        web_driver.switch_to.window(current_window_handle)
+        web_driver.close()
+        # need to switch to login page after close, otherwise, got error: no such window: target window already closed
+        web_driver.switch_to.window(login_window_handle)
+        print('close window %s, %d windows (tabs) still open'%(current_window_handle, len(current_window_handle.window_handles)))
+
 
 
 def automated_download_ASAR_ESA(web_driver, data_urls,save_dir, max_process_num=8):
@@ -331,6 +338,9 @@ def ESA_log_in(save_dir,username,password):
             break
     if total_wait_time < max_wait_time:
         print('Login successful!')
+        # save the window handle
+        global login_window_handle
+        login_window_handle = driver.current_window_handle
         return driver
 
     driver.quit()
