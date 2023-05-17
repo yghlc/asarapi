@@ -183,6 +183,8 @@ def download_one_file_ESA(web_driver, url, save_dir):
         free_GB = io_function.get_free_disk_space_GB(save_dir)
 
     basic.outputlogMessage('start downloading %s'%url)
+    # original_window = driver.current_window_handle
+    web_driver.switch_to.new_window('tab')
     web_driver.get(url)
 
     # wait until the file has been downloaded
@@ -191,6 +193,7 @@ def download_one_file_ESA(web_driver, url, save_dir):
         time.sleep(60)
         total_wait_time += 60
     basic.outputlogMessage('downloaded: %s'%save_path)
+    web_driver.close()  # Close the tab or window
 
 
 def automated_download_ASAR_ESA(web_driver, data_urls,save_dir, max_process_num=8):
