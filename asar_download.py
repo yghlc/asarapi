@@ -194,12 +194,12 @@ def download_one_file_ESA(web_driver, url, save_dir):
         time.sleep(60)
         total_wait_time += 60
     basic.outputlogMessage('downloaded: %s'%save_path)
-    if current_window_handle in current_window_handle.window_handles:
+    if current_window_handle in web_driver.window_handles:
         web_driver.switch_to.window(current_window_handle)
         web_driver.close()
         # need to switch to login page after close, otherwise, got error: no such window: target window already closed
         web_driver.switch_to.window(login_window_handle)
-        print('close window %s, %d windows (tabs) still open'%(current_window_handle, len(current_window_handle.window_handles)))
+        print('close window %s, %d windows (tabs) still open'%(current_window_handle, len(web_driver.window_handles)))
 
 
 
