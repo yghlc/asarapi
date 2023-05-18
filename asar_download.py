@@ -39,6 +39,7 @@ admin_url = 'https://esar-ds.eo.esa.int/oads/access/login'
 machine_name = os.uname()[1]
 download_tasks = []
 login_window_handle = None
+not_available_list = []
 
 b_rm_small_overlap = True
 
@@ -174,6 +175,11 @@ def download_one_file_ESA(web_driver, url, save_dir):
         print('%s exists, skip downloading'%save_path)
         return
 
+    # check not available list
+    if file_name in not_available_list:
+        print('%s is not available according to the ESA website'%file_name)
+        return
+
     # check free disk space
     free_GB = io_function.get_free_disk_space_GB(save_dir)
     total_wait_time = 0
@@ -205,6 +211,9 @@ def download_one_file_ESA(web_driver, url, save_dir):
 
 
 def automated_download_ASAR_ESA(web_driver, data_urls,save_dir, max_process_num=8):
+
+    global not_available_list
+    not_available_list = io_function.read_list_from_txt(os.path.join(save_dir,'not_available_list.txt'))
 
     for ii, url in enumerate(data_urls):
         # download in parallel
