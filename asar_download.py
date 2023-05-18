@@ -190,11 +190,12 @@ def download_one_file_ESA(web_driver, url, save_dir):
 
     # wait until the file has been downloaded
     total_wait_time = 0
-    while does_ERS_file_exist(file_name, save_dir) is False and total_wait_time < 60 * 60 * 12:
+    max_wait_time = 60 * 60 * 12  # max 12 hours
+    while does_ERS_file_exist(file_name, save_dir) is False and total_wait_time < max_wait_time:
         time.sleep(60)
         total_wait_time += 60
     basic.outputlogMessage('downloaded: %s'%save_path)
-    if current_window_handle in web_driver.window_handles:
+    if current_window_handle in web_driver.window_handles and total_wait_time < max_wait_time:
         web_driver.switch_to.window(current_window_handle)
         web_driver.close()
         # need to switch to login page after close, otherwise, got error: no such window: target window already closed
