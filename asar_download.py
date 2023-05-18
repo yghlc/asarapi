@@ -244,6 +244,7 @@ def automated_download_ASAR_ESA(web_driver, data_urls,save_dir, max_process_num=
         else:
             break
 
+    return True
 
 def download_ASAR_from_ESA(web_driver, extent_shp, save_dir, start, stop, platform=None, product='single-look-complex',orbit=None,
                            polarisation=None, contains=False, limit=500,process_num=8):
@@ -276,11 +277,17 @@ def download_ASAR_from_ESA(web_driver, extent_shp, save_dir, start, stop, platfo
             data_meta_path = os.path.join(save_dir,'%s_meta.json'%ext_base_name)
         else:
             data_meta_path = os.path.join(save_dir, '%s_meta_%d.json' % (ext_base_name, idx))
+        done_indicator = data_meta_path + '_Done'
+        if os.path.isfile(done_indicator):
+            print('Downloading imagery in %s has completed previously, skip'%data_meta_path)
+            continue
         save_query_results(results,data_meta_path)
 
         # download data
         data_urls = results['url'].to_list()
-        automated_download_ASAR_ESA(web_driver, data_urls, save_dir, max_process_num=process_num)
+        if automated_download_ASAR_ESA(web_driver, data_urls, save_dir, max_process_num=process_num) is True:
+            io_function.save_list_to_txt(done_indicator, ['Complete at %s'%str(datetime.now())])
+
 
 
 def test_search():
