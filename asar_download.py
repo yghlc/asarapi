@@ -190,6 +190,7 @@ def download_one_file_ESA(web_driver, url, save_dir):
         free_GB = io_function.get_free_disk_space_GB(save_dir)
 
     basic.outputlogMessage('start downloading %s'%url)
+    web_driver.switch_to.window(login_window_handle) # switch to login window before opening a new tab
     web_driver.switch_to.new_window('tab')
     current_window_handle = web_driver.current_window_handle
     web_driver.get(url)
