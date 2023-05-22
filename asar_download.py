@@ -214,7 +214,10 @@ def download_one_file_ESA(web_driver, url, save_dir):
 def automated_download_ASAR_ESA(web_driver, data_urls,save_dir, max_process_num=8):
 
     global not_available_list
-    not_available_list = io_function.read_list_from_txt(os.path.join(save_dir,'not_available_list.txt'))
+    not_available_file = os.path.join(save_dir,'not_available_list.txt')
+    if os.path.isfile(not_available_file):
+        not_available_list = io_function.read_list_from_txt(not_available_file)
+
 
     for ii, url in enumerate(data_urls):
         # download in parallel
