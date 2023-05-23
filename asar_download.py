@@ -165,6 +165,20 @@ def remove_record_only_cover_parts(query_results, aoi_wkt):
 
     return query_results.iloc[sel_idx]
 
+def file_exist_not_available(url, save_dir):
+    tmp = urlparse(url)
+    file_name = os.path.basename(tmp.path)
+    save_path = os.path.join(save_dir,file_name)
+    if does_ERS_file_exist(file_name, save_dir):
+        print('%s exists, skip downloading'%save_path)
+        return True
+
+    # check not available list
+    if file_name in not_available_list:
+        print('%s is not available according to the ESA website'%file_name)
+        return True
+    return False
+
 
 def download_one_file_ESA(web_driver, url, save_dir):
 
@@ -232,10 +246,12 @@ def automated_download_ASAR_ESA(web_driver, data_urls,save_dir, max_process_num=
 
         # start the processing
         print('Progress: %d/%d'%(ii+1, len(data_urls)))
+        if file_exist_not_available(url, save_dir):
+            continue
         sub_process = Process(target=download_one_file_ESA, args=(web_driver,url, save_dir))  # start a process, don't wait
         sub_process.start()
         download_tasks.append(sub_process)
-        time.sleep(0.5)   # wait 1 seconds
+        time.sleep(3)   # wait 3 seconds
 
         basic.close_remove_completed_process(download_tasks)
 
